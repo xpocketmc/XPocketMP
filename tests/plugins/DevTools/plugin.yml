@@ -2,7 +2,7 @@ name: DevTools
 main: DevTools\DevTools
 src-namespace-prefix: DevTools
 version: 1.17.2+dev
-api: [5.0.0]
+api: [10.0.0]
 load: STARTUP
 author: PocketMine Team
 description: Helps develop and distribute PocketMine-MP plugins
