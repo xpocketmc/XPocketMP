@@ -55,7 +55,7 @@ function preparePharCacheDirectory() : string{
 
 	$i = 0;
 	do{
-		$tmpPath = sys_get_temp_dir() . '/PocketMine-MP-phar-cache.' . $i;
+		$tmpPath = sys_get_temp_dir() . '/XPocketMP-phar-cache.' . $i;
 		$i++;
 	}while(is_file($tmpPath));
 	if(!@mkdir($tmpPath) && !is_dir($tmpPath)){
@@ -165,4 +165,4 @@ $start = hrtime(true);
 $cacheName = preparePharCache($tmpDir, __FILE__);
 echo "Cache ready at $cacheName in " . number_format((hrtime(true) - $start) / 1e9, 2) . "s\n";
 
-require 'phar://' . str_replace(DIRECTORY_SEPARATOR, '/', $cacheName) . '/src/PocketMine.php';
+require 'phar://' . str_replace(DIRECTORY_SEPARATOR, '/', $cacheName) . '/src/XPocketMP.php';
