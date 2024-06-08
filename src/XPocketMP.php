@@ -335,40 +335,37 @@ JIT_WARNING
 		\GlobalLogger::set($logger);
 
 		emit_performance_warnings($logger);
-
+    $condition = true;
 		$exitCode = 0;
-		$shouldRun = true;
+		do{
+			if(!file_exists(Path::join($dataPath, "server.properties")) && !isset($opts[BootstrapOptions::NO_WIZARD])){
+				$installer = new SetupWizard($dataPath);
+				if(!$installer->run()){
+					$exitCode = -1;
+					break;
+				}
+			}
 
-do {
-    if(!file_exists(Path::join($dataPath, "server.properties")) && !isset($opts["no-wizard"])){
-        $installer = new SetupWizard($dataPath);
-        if(!$installer->run()){
-            $exitCode = -1;
-            break;
-        }
-    }
+			/*
+			 * We now use the Composer autoloader, but this autoloader is still for loading plugins.
+			 */
+			$autoloader = new ThreadSafeClassLoader();
+			$autoloader->register(false);
 
-    $autoloader = new ThreadSafeClassLoader();
-    $autoloader->register(false);
+			new Server($autoloader, $logger, $dataPath, $pluginPath);
 
-    new Server($autoloader, $logger, $dataPath, $pluginPath);
+			$logger->info("Stopping other threads");
 
-    $logger->info("Stopping other threads");
+			$killer = new ServerKiller(8);
+			$killer->start();
+			usleep(10000); //Fixes ServerKiller not being able to start on single-core machines
 
-    $killer = new ServerKiller(8);
-    $killer->start();
-    usleep(10000); //Fixes ServerKiller not being able to start on single-core machines
-
-    if(ThreadManager::getInstance()->stopAll() > 0){
-        $logger->debug("Some threads could not be stopped, performing a force-kill");
-        Process::kill(Process::pid());
-    }
-
-    // Set $shouldRun to false to break the loop, or add any other condition you need.
-    $shouldRun = false;
-} while ($shouldRun);
-
-
+			if(ThreadManager::getInstance()->stopAll() > 0){
+				$logger->debug("Some threads could not be stopped, performing a force-kill");
+				Process::kill(Process::pid());
+				$condition = someFunctionThatUpdatesCondition();
+			}
+		}while($condition);
 		$logger->shutdownLogWriterThread();
 
 		echo Terminal::$FORMAT_RESET . PHP_EOL;
