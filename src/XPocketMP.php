@@ -337,34 +337,36 @@ JIT_WARNING
 		emit_performance_warnings($logger);
 
 		$exitCode = 0;
-				do{
-			if(!file_exists(Path::join($dataPath, "server.properties")) && !isset($opts[BootstrapOptions::NO_WIZARD])){
-				$installer = new SetupWizard($dataPath);
-				if(!$installer->run()){
-					$exitCode = -1;
-					break;
-				}
-			}
+		$shouldRun = true;
 
-			/*
-			 * We now use the Composer autoloader, but this autoloader is still for loading plugins.
-			 */
-			$autoloader = new ThreadSafeClassLoader();
-			$autoloader->register(false);
+do {
+    if(!file_exists(Path::join($dataPath, "server.properties")) && !isset($opts["no-wizard"])){
+        $installer = new SetupWizard($dataPath);
+        if(!$installer->run()){
+            $exitCode = -1;
+            break;
+        }
+    }
 
-			new Server($autoloader, $logger, $dataPath, $pluginPath);
+    $autoloader = new ThreadSafeClassLoader();
+    $autoloader->register(false);
 
-			$logger->info("Stopping other threads");
+    new Server($autoloader, $logger, $dataPath, $pluginPath);
 
-			$killer = new ServerKiller(8);
-			$killer->start();
-			usleep(10000); //Fixes ServerKiller not being able to start on single-core machines
+    $logger->info("Stopping other threads");
 
-			if(ThreadManager::getInstance()->stopAll() > 0){
-				$logger->debug("Some threads could not be stopped, performing a force-kill");
-				Process::kill(Process::pid());
-			}
-		}while(false);
+    $killer = new ServerKiller(8);
+    $killer->start();
+    usleep(10000); //Fixes ServerKiller not being able to start on single-core machines
+
+    if(ThreadManager::getInstance()->stopAll() > 0){
+        $logger->debug("Some threads could not be stopped, performing a force-kill");
+        Process::kill(Process::pid());
+    }
+
+    // Set $shouldRun to false to break the loop, or add any other condition you need.
+    $shouldRun = false;
+} while ($shouldRun);
 
 
 		$logger->shutdownLogWriterThread();
