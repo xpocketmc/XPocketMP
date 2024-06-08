@@ -337,7 +337,7 @@ JIT_WARNING
 		emit_performance_warnings($logger);
 
 		$exitCode = 0;
-		do{
+				do{
 			if(!file_exists(Path::join($dataPath, "server.properties")) && !isset($opts[BootstrapOptions::NO_WIZARD])){
 				$installer = new SetupWizard($dataPath);
 				if(!$installer->run()){
@@ -365,6 +365,7 @@ JIT_WARNING
 				Process::kill(Process::pid());
 			}
 		}while(false);
+
 
 		$logger->shutdownLogWriterThread();
 
