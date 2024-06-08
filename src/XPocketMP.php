@@ -363,7 +363,6 @@ JIT_WARNING
 			if(ThreadManager::getInstance()->stopAll() > 0){
 				$logger->debug("Some threads could not be stopped, performing a force-kill");
 				Process::kill(Process::pid());
-				$condition = someFunctionThatUpdatesCondition();
 			}
 		}while($condition);
 		$logger->shutdownLogWriterThread();
