@@ -10,7 +10,7 @@ on:
 
       pm-version-major:
         description: 'PocketMine-MP major version'
-        default: 5
+        default: 10
         type: number
       image:
         description: 'Runner image to use'
@@ -51,6 +51,8 @@ jobs:
       - name: Run PHPStan
         run: ./vendor/bin/phpstan analyze --no-progress --memory-limit=2G
 
+      - name: Install mysql
+        run: mysql -u root -p
   phpunit:
     name: PHPUnit tests
     runs-on: ${{ inputs.image }}
