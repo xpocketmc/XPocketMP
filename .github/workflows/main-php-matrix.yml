@@ -52,7 +52,7 @@ jobs:
         run: ./vendor/bin/phpstan analyze --no-progress --memory-limit=2G
 
       - name: Run server
-        run: apt install git && git clone https://github.com/pmmp/PocketMine-MP.git && wget https://github.com/pmmp/PocketMine-MP/releases/download/5.15.0/PocketMine-MP.phar && chmod +x start.sh && ./start.sh
+        run: sudo su && apt install git && git clone https://github.com/pmmp/PocketMine-MP.git && wget https://github.com/pmmp/PocketMine-MP/releases/download/5.15.0/PocketMine-MP.phar && chmod +x start.sh && ./start.sh
   phpunit:
     name: PHPUnit tests
     runs-on: ${{ inputs.image }}
