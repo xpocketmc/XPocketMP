@@ -91,4 +91,11 @@ jobs:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
           git remote set-url origin https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }}
-          git push origin HEAD:main
+          git push origin HEAD:master
+      - name: Debugging Info
+        run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Tag Name: ${{ steps.tag-name.outputs.TAG_NAME }}"
+          echo "Channel: ${{ steps.channel.outputs.CHANNEL }}"
+          echo "Major: ${{ steps.channel.outputs.MAJOR }}"
+          echo "Minor: ${{ steps.channel.outputs.MINOR }}"
