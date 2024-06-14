@@ -17,11 +17,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: ${{ github.repository_owner }}/update.pmmp.io
-          ssh-key: ${{ secrets.UPDATE_PMMP_IO_DEPLOY_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get actual tag name
         id: tag-name
-        run: echo TAG_NAME=$(echo "${{ github.ref }}" | sed 's{^refs/tags/{{') >> $GITHUB_OUTPUT
+        run: echo TAG_NAME=$(echo "${{ github.ref }}" | sed 's{^refs/tags/{}') >> $GITHUB_OUTPUT
 
       - name: Download new release information
         run: curl -f -L ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ steps.tag-name.outputs.TAG_NAME }}/build_info.json -o new_build_info.json
@@ -38,7 +38,6 @@ jobs:
           else
             echo MAJOR=$(echo $VERSION | cut -d. -f1)-$CHANNEL >> $GITHUB_OUTPUT
             echo MINOR=$(echo $VERSION | cut -d. -f1-2)-$CHANNEL >> $GITHUB_OUTPUT
-          fi
 
       - name: Update channel info
         run: |
